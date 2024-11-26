@@ -20,26 +20,37 @@ int main ()
 
         if( buff[0] == '\n') continue;       // чекаем пустою строчку
             
-        //printf("buff = %s\n", buff);
+        printf("buff = %s\n", buff);
 
         nto0( buff, SIZE_BUFF);         // \n меняем на \0 в буффере
 
-        if( buff[0] == 'q' && buff[1] == '\0') break;
+        if( buff[0] == 'q' && buff[1] == '\0') break; // q выходит из программы 
 
         char **my_argv = buff_split( buff, SIZE_BUFF);
 
-        // for (int i = 0; i < SIZE_ARGV; i++)
-        // {
-        //     printf("my_argv[%d] =%s \n", i,  my_argv[i]);
-        // }
+        print_arr( my_argv, SIZE_ARGV);
 
-        if( !fork())
-        { 
-            execvp(my_argv[0], my_argv);
+        // pipeline--------------
 
-            printf(" `%s` no such in directory\n", my_argv[0]);
-            exit(1);
+        int count_argv = 0;
+
+        for ( int index_pipe = 0; index_pipe < SIZE_ARGV; index_pipe++)
+        {
+            if (my_argv[i] == NULL) break;
+            
+            if( my_argv[i][0] == '|')
+            {
+
+                run_prog( my_argv+i-count_argv, count_argv); // запускает прогу exec-ом
+                count_argv = 0;
+            }
+            else 
+            {
+                count_argv++;
+            }
         }
+
+        //-----------------------
 
         wait(0);
         all_free( my_argv);

@@ -1,5 +1,13 @@
 #include "header.h"
 
+ void print_arr( char * my_argv[], int size)
+{
+    for (int i = 0; i < size; i++)
+        {
+            printf("my_argv[%d] =%s \n", i,  my_argv[i]);
+        }
+}
+
 void print_interface()
 {
     char * pwd  = NULL;
@@ -25,6 +33,26 @@ int nto0( char buff[], int size)
     }
     return 0;
 }
+
+ void run_prog( char * my_argv[], int size)
+ {
+    char **copy_argv = (char **)calloc( size+1, sizeof(char *));
+
+    for (int i = 0; i < size; i++)
+    {
+        copy_argv[i] = strcpy( my_argv[i]);
+    }
+    
+    copy_argv[size] = NULL;
+
+    if( !fork())
+        { 
+            execvp(copy_argv[0], copy_argv);
+
+            printf(" `%s` no such in directory\n",copy_argv[0]);
+            exit(1);
+        }
+ }
 
 
 char * str_cpy( const char * str_buff, int count_w)
