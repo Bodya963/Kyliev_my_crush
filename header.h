@@ -18,9 +18,14 @@
 
 
 void print_arr( char **, int ); // принтует массив argv
-void run_prog( char**, int);
+char ** run_prog( char**, int);
+char ** run_prog( char ** , int , int* , int );
 int nto0(char *, int); //заменяет \n в строке на \0
-char** buff_split( char *, int); // разделяет входной буфер на аргументы для exec
-char * str_cpy( const char *, int ); // 
-void all_free(char**); // 
+int argv_len( char, int ); // определяет кол-во аргументов из входного буфера
+int str_len( char *);
+int pipe_prog( char **, int ,char **, int); // соединяет пайрлайном два программы
+char** buff_split( char *, int, int*); // разделяет входной буфер на аргументы для exec
+char * str_cpy( char *, int ); // 
+void wait_all( int); 
+void all_free(char**, int); // 
 void print_interface(); // печаетает интерфейс для shell
