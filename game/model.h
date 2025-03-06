@@ -37,6 +37,7 @@ struct snake
     std::list<part_body> body;
 
     diraction course;
+
 };
 
 struct winsize;

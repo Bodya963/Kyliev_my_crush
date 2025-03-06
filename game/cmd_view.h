@@ -15,6 +15,9 @@ class cmd_view: public view
         
         virtual void draw_snake( snake);
         
+        void set_color( char *);
+        void reset_color();
+
         void clr_win();
 
         void go_to( int , int);
