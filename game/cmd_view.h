@@ -18,6 +18,8 @@ class cmd_view: public view
         void set_color( char *);
         void reset_color();
 
+        void draw_frame(); // рисует рамку
+
         void clr_win();
 
         void go_to( int , int);

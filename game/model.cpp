@@ -9,13 +9,25 @@ model::model()
 
     center = { win_size.ws_col/2, win_size.ws_row/2};
 
+   // win_size.ws_col--;
+   // win_size.ws_row--;
+    
     diraction course = diraction::RIGHT;
     snakes.push_back( create_snake( 5, course, center));
 
-    //fd = fopen("log", "w");
+    fd = fopen("log", "w");
     srand( time(0));
 }
 
+int model::get_ws_col()
+{
+    return win_size.ws_col;
+}
+
+int model::get_ws_row()
+{
+    return win_size.ws_row;
+}
 //-------------------------------------------
 
 snake model::create_snake( int size, diraction course, pos start_pos) // создает змейку размера size с напралениеи course 
@@ -42,11 +54,12 @@ rabbit model::new_rabbit()
     
     while(true)
     {
-        new_rabbit.coord.x = rand() % win_size.ws_col;
-        new_rabbit.coord.y = rand() % win_size.ws_row;
-
+        new_rabbit.coord.x = 2 + (rand() % (win_size.ws_col - 1 - 2 + 1));
+        new_rabbit.coord.y = 2 + (rand() % (win_size.ws_row - 1 - 2 + 1));
+        
         if( check_rabbit( new_rabbit))
         {
+            fprintf( fd, "rabbit: x = %d. y = %d\n", new_rabbit.coord.x, new_rabbit.coord.y);
             rabbits.push_back(new_rabbit);
             return new_rabbit;
         }

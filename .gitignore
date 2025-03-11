@@ -19,6 +19,7 @@ a.out
 !/game/Makefile
 !/game/header.h
 c_cat.cpp
+game/log
 dodo_pizza
 dodo_pizza.cpp
 file_dir

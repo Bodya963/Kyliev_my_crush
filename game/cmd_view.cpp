@@ -3,13 +3,13 @@
 void cmd_view::run( view * main_view)
 {
     clr_win();
- 
+    draw_frame();
     
     int i = 0;
     while(true)
     {
-        if( i == 10) break;
-        draw( main_view );
+        if( i == 100) break;
+        //draw( main_view );
         
         rabbit new_rabbit = view_model->new_rabbit();
         draw_rabbit(new_rabbit);
@@ -65,6 +65,31 @@ void cmd_view::draw_rabbit( rabbit new_rabbit)
 
     set_color( GREEN);
     printf("Z");
+    reset_color();
+}
+
+void cmd_view::draw_frame()
+{
+    set_color( PURPLE);
+
+    for (int x = 1; x <= view_model->get_ws_col(); x++)
+    {
+        go_to( x, 1);
+        printf("$");
+
+        go_to( x, view_model->get_ws_row());
+        printf("$");
+    }
+
+    for (int y = 1; y <= view_model->get_ws_row(); y++)
+    {
+        go_to( 1, y);
+        printf("$");
+
+        go_to( view_model->get_ws_col(), y);
+        printf("$");
+    }
+
     reset_color();
 }
 

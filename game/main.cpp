@@ -28,7 +28,7 @@ int main( int argc, char ** argv)
     main_view->run(main_view);
     
 
-    //fclose(main_model.fd);
+    fclose(main_model.fd);
 
     delete main_view;
 

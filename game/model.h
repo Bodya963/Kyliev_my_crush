@@ -40,7 +40,7 @@ struct snake
 
 };
 
-struct winsize;
+struct winsize; 
 
 // --------------------------------------
 
@@ -52,8 +52,8 @@ class model
         winsize win_size;
 
     public:
+        FILE * fd; // для логов
 
-        //FILE * fd;
         part_body last_delete_part;
 
         std::list<rabbit> rabbits; 
@@ -68,6 +68,9 @@ class model
         void crawl_snake( snake&); // Перемещение змейки
 
     public:
+
+        int get_ws_col();
+        int get_ws_row();
 
         model();
 
