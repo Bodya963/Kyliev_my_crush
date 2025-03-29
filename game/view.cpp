@@ -15,7 +15,7 @@
     {
         cmd_view * obj = new cmd_view;
 
-        printf("svo\n");
+        //printf("svo\n");
 
         return (view *)obj;
     }

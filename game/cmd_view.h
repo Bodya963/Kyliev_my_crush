@@ -2,10 +2,25 @@
 
 #include "header.h"
 #include "view.h"
+#include "controller.h"
 
 class cmd_view: public view
 {
+
+    private:
+        
+        pollfd fd[1];
+        int timeout;
+
+        // fd_set readfds, writefds, exceptfds;
+        // timeval timeout;
+
+
+
     public:
+        cmd_view();
+
+        //void reset_fds();
 
         virtual void draw( view *);
 
@@ -13,14 +28,22 @@ class cmd_view: public view
 
         virtual void draw_rabbit( rabbit);
         
-        virtual void draw_snake( snake);
-        
+        virtual void draw_snake( snake, event);
+
+        void draw_frame(); // рисует рамку
+
+        int check_snk_in_change( snake& );
+
+        void wait_input();
+
         void set_color( char *);
         void reset_color();
 
-        void draw_frame(); // рисует рамку
 
         void clr_win();
 
         void go_to( int , int);
+
+        FILE * fd_log;
+        void set_fd(FILE *);
 };

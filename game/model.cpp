@@ -15,7 +15,8 @@ model::model()
     diraction course = diraction::RIGHT;
     snakes.push_back( create_snake( 5, course, center));
 
-    fd = fopen("log", "w");
+    finish = 0;
+
     srand( time(0));
 }
 
@@ -35,6 +36,7 @@ snake model::create_snake( int size, diraction course, pos start_pos) // соз�
     snake new_snake;
 
     new_snake.course = course;
+    new_snake.score = 0;
 
     for( int i = 0; i < size; i++)
     {
@@ -59,7 +61,7 @@ rabbit model::new_rabbit()
         
         if( check_rabbit( new_rabbit))
         {
-            fprintf( fd, "rabbit: x = %d. y = %d\n", new_rabbit.coord.x, new_rabbit.coord.y);
+            fprintf( fd_log, "rabbit: x = %d. y = %d\n", new_rabbit.coord.x, new_rabbit.coord.y);
             rabbits.push_back(new_rabbit);
             return new_rabbit;
         }
@@ -75,7 +77,7 @@ int model::check_rabbit( rabbit rabbit_1)
     return false;
 }
 
-void model::crawl_snake( snake& snake_1)
+void model::crawl_snake( snake& snake_1, event event)
 {
     part_body body_1;
     auto head_snake = snake_1.body.begin();
@@ -85,26 +87,32 @@ void model::crawl_snake( snake& snake_1)
     {
     case diraction::UP:
         body_1.coord.x = head_snake->coord.x ;
-        body_1.coord.y = head_snake->coord.y + 1; 
+        body_1.coord.y = head_snake->coord.y - 1; 
 
         snake_1.body.push_back(body_1);
 
         last_delete_part.coord.x = snake_1.body.begin()->coord.x;
         last_delete_part.coord.y = snake_1.body.begin()->coord.y;
 
-        snake_1.body.erase(snake_1.body.begin());
+        if( event == event::nothing)
+        {
+            snake_1.body.erase(snake_1.body.begin());
+        }
         break;
 
     case diraction::DOWN:
         body_1.coord.x = head_snake->coord.x ;
-        body_1.coord.y = head_snake->coord.y - 1;     
+        body_1.coord.y = head_snake->coord.y + 1;     
 
         snake_1.body.push_back(body_1);
 
         last_delete_part.coord.x = snake_1.body.begin()->coord.x;
         last_delete_part.coord.y = snake_1.body.begin()->coord.y;
 
-        snake_1.body.erase(snake_1.body.begin());
+        if( event == event::nothing)
+        {
+            snake_1.body.erase(snake_1.body.begin());
+        }
         break;
 
     case diraction::LEFT:
@@ -116,7 +124,10 @@ void model::crawl_snake( snake& snake_1)
         last_delete_part.coord.x = snake_1.body.begin()->coord.x;
         last_delete_part.coord.y = snake_1.body.begin()->coord.y;
 
-        snake_1.body.erase(snake_1.body.begin());
+        if( event == event::nothing)
+        {
+            snake_1.body.erase(snake_1.body.begin());
+        }
         break;
 
     case diraction::RIGHT:
@@ -128,8 +139,10 @@ void model::crawl_snake( snake& snake_1)
         last_delete_part.coord.x = snake_1.body.begin()->coord.x;
         last_delete_part.coord.y = snake_1.body.begin()->coord.y;
 
-        snake_1.body.erase(snake_1.body.begin());
-
+        if( event == event::nothing)
+        {
+            snake_1.body.erase(snake_1.body.begin());
+        }
         // for( auto& gouda: snake_1.body)
         // fprintf(fd , "svo : x = %d, y = %d\n", gouda.coord.x, gouda.coord.y);
         break;
@@ -140,7 +153,160 @@ void model::update()
 {
     for( auto& snake: snakes )
     {
-        crawl_snake( snake);
+        pos next_block = get_forward_block( snake);
+        
+        if( check_block_for_finish( next_block))
+        {
+            finish = 1; //конец игры 
+            return;
+        }
+
+        if( check_block_for_z( next_block))
+        {
+            snake.score++;
+            change new_change;
+            new_change.event_ = event::eat_rabbit;
+            new_change.snake_ = snake;
+
+            changes.push_back(new_change);
+            crawl_snake( snake, event::eat_rabbit);
+        }
+
+        crawl_snake( snake, event::nothing);
+
     }
 
+}
+
+int model::check_block_for_finish( pos block)
+{
+    if( (block.x == win_size.ws_col) or (block.x == 1) or (block.y == win_size.ws_row) or (block.y == 1))
+    {
+        return 1;
+    }
+
+    int flag = 0;
+    
+    for (snake snake1 : snakes)
+    {
+        flag = 0;
+
+        for ( auto& part: snake1.body)
+        {
+            if( part.coord.x == block.x and part.coord.y == block.y)
+            {
+                flag = 1;
+                break;
+            }
+        }    
+
+        if (flag)
+        {
+            break;
+        }
+    }
+
+    if(flag)
+    {
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+int model::check_block_for_z( pos block)
+{
+    rabbit if_rabbit;
+    if_rabbit.coord.x = block.x;
+    if_rabbit.coord.y = block.y;
+    
+    if( find( rabbits.begin(), rabbits.end(), if_rabbit) != rabbits.end())
+    {
+        return 1;
+    }
+
+    return 0;
+
+}
+
+void model::change_course( std::list<snake>::iterator snk, diraction new_course)
+{
+    
+
+    switch ( new_course)
+    {
+    case diraction::UP:
+        if (snk->course == diraction::DOWN)
+        {
+            return;
+        }
+        break;
+
+    case diraction::DOWN:
+        if (snk->course == diraction::UP)
+        {
+            return;
+        }
+        break;
+
+    case diraction::LEFT:
+        if (snk->course == diraction::RIGHT)
+        {
+            return;
+        }
+        break;
+
+    case diraction::RIGHT:
+        if (snk->course == diraction::LEFT)
+        {
+            return;
+        }
+        break;    
+
+    default:
+        break;
+    }
+
+    snk->course = new_course;
+}
+
+
+pos model::get_forward_block( snake& snk)
+{
+    pos next_block;
+    auto head_snake = snk.body.begin();
+    std::advance(head_snake, snk.body.size() - 1);
+
+    switch ( snk.course)
+    {
+        case diraction::UP:
+            next_block.x = head_snake->coord.x;
+            next_block.y = head_snake->coord.y - 1;
+            break;
+
+        case diraction::DOWN:
+            next_block.x = head_snake->coord.x;
+            next_block.y = head_snake->coord.y + 1;
+            break;
+
+        case diraction::LEFT:
+            next_block.x = head_snake->coord.x - 1;
+            next_block.y = head_snake->coord.y;
+            break;
+
+        case diraction::RIGHT:
+            next_block.x = head_snake->coord.x + 1;
+            next_block.y = head_snake->coord.y;
+            break;
+
+    }  
+    
+    return next_block;
+}
+
+void model::set_fd( FILE * fd )
+{
+    fd_log = fd;
 }

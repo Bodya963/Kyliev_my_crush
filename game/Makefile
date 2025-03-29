@@ -1,4 +1,4 @@
-CFLAGS = -Wall -g -O
+CFLAGS = -Wall -g -O0
 
 NAME = game
 

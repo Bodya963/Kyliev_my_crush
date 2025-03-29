@@ -11,6 +11,16 @@
 #include <list>
 #include <ctime>
 #include <algorithm>
+#include <termios.h>
+#include <sys/time.h>
+#include <sys/poll.h>
+#include <sys/select.h>
+#include <signal.h>
+#include <thread>
+#include <chrono>
+#include <iostream>
+#include <fstream>
+
 
 // Цвета-----------------------
 
@@ -23,3 +33,5 @@
 #define BLUE_G "\u001b[36;1m"
 #define WHITE "\u001b[37;1m"
 #define RESET "\u001b[0m"
+
+

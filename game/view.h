@@ -26,5 +26,7 @@ class view
 
         virtual void draw_rabbit( rabbit) = 0;
 
+        virtual void set_fd( FILE *) = 0;
+
     
 };
