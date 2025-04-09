@@ -65,6 +65,8 @@ struct wall
     pos end_;
 
     diraction course;
+
+    pos last_delete;
 };
 
 struct change

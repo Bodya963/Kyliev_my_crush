@@ -27,6 +27,8 @@ void cmd_view::run( view * main_view)
     draw_rabbit(view_model->new_rabbit());
     draw_rabbit(view_model->new_rabbit());
     draw_rabbit(view_model->new_rabbit());
+
+    
     
     //---------------------------------
     
@@ -98,9 +100,28 @@ void cmd_view::draw( view * main_view)
         }
 
 
+
+    for( auto& wl: view_model->walls)
+    {
+        draw_wall( wl);
+    }
+
+
         go_to( 1, view_model->get_ws_col() - 11);
         printf("score = %d", snake.score);
     }
+}
+
+void cmd_view::draw_wall( wall& wl)
+{
+    for( auto& part: wl.part)
+    {
+        go_to( part.x, part.y);
+        printf("1");
+    }
+
+    go_to( wl.last_delete.x, wl.last_delete.y);
+    printf(" ");
 }
 
 void cmd_view::draw_snake(snake snake_1, event event)

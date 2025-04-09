@@ -13,6 +13,11 @@ model::model()
    // win_size.ws_row--;
     
     create_snake( 2, diraction::RIGHT, center);
+    
+    pos start_wall;
+    start_wall.x = 10;
+    start_wall.y = 20;
+    create_wall( 3, diraction::RIGHT, start_wall, 20 );
 
     finish = 0;
 
@@ -63,6 +68,7 @@ void model::create_snake( int size, diraction course, pos start_pos) // созд
 
 void model::create_wall( int size, diraction course, pos start_pos, int size_move)
 {
+
     wall new_wall;
 
     new_wall.start_.x = start_pos.x;
@@ -107,6 +113,8 @@ void model::create_wall( int size, diraction course, pos start_pos, int size_mov
             new_wall.end_.y = last_part->y + size_move;
             new_wall.end_.x = last_part->x;
 
+            new_wall.course = diraction::UP;
+
             break;
 
         case diraction::LEFT:
@@ -124,6 +132,8 @@ void model::create_wall( int size, diraction course, pos start_pos, int size_mov
             last_part = --new_wall.part.end();
             new_wall.end_.y = last_part->y;
             new_wall.end_.x = last_part->x - size_move;
+
+            new_wall.course = diraction::RIGHT;
 
             break;
 
@@ -143,6 +153,8 @@ void model::create_wall( int size, diraction course, pos start_pos, int size_mov
             new_wall.end_.y = last_part->y;
             new_wall.end_.x = last_part->x + size_move;
 
+            new_wall.course = diraction::RIGHT;
+
             break;
     };
 
@@ -153,6 +165,106 @@ void model::create_wall( int size, diraction course, pos start_pos, int size_mov
 void model::move_wall( wall& wl)
 {
 
+    switch (wl.course)
+    {
+    case diraction::UP:
+        if( wl.start_.x == wl.part.begin()->x and wl.start_.y == (wl.part.begin())->y)
+        {
+            wl.course = diraction::DOWN;
+        }
+        break;
+
+    case diraction::DOWN:
+        if( wl.end_.x == (--wl.part.end())->x and wl.end_.y == (--wl.part.end())->y)
+        {
+            wl.course = diraction::UP;
+        }
+        break;
+
+    case diraction::LEFT:
+        if( wl.start_.x == wl.part.begin()->x and wl.start_.y == (wl.part.begin())->y)
+        {
+            wl.course = diraction::RIGHT;
+        }
+        break;
+
+    case diraction::RIGHT:
+        if( wl.end_.x == (--wl.part.end())->x and wl.end_.y == (--wl.part.end())->y)
+        {
+            wl.course = diraction::LEFT;
+        }
+        break;
+    
+    default:
+        break;
+    }
+
+    pos body_1;
+    auto head_wall = wl.part.begin();
+
+    switch (wl.course)
+    {
+    case diraction::UP:
+
+        head_wall = wl.part.begin();
+
+        body_1.x = head_wall->x ;
+        body_1.y = head_wall->y - 1; 
+
+        wl.part.push_front(body_1);
+    
+        wl.last_delete.x = (--wl.part.end())->x;
+        wl.last_delete.y = (--wl.part.end())->y;
+
+        wl.part.erase(--wl.part.end());
+        
+        break;
+
+    case diraction::DOWN:
+            
+        head_wall = --wl.part.end();
+        
+        body_1.x = head_wall->x ;
+        body_1.y = head_wall->y + 1; 
+
+        wl.part.push_back(body_1);
+
+        wl.last_delete.x = wl.part.begin()->x;
+        wl.last_delete.y = wl.part.begin()->y;
+
+        wl.part.erase(wl.part.begin());
+        break;
+
+    case diraction::LEFT:
+            
+        body_1.x = head_wall->x - 1 ;
+        body_1.y = head_wall->y; 
+
+        wl.part.push_front(body_1);
+
+        wl.last_delete.x = (--wl.part.end())->x;
+        wl.last_delete.y = (--wl.part.end())->y;
+
+        wl.part.erase(--wl.part.end());
+        break;
+
+    case diraction::RIGHT:
+            
+        head_wall = --wl.part.end();
+
+        body_1.x = head_wall->x + 1 ;
+        body_1.y = head_wall->y; 
+
+        wl.part.push_back(body_1);
+
+        wl.last_delete.x = (wl.part.begin())->x;
+        wl.last_delete.y = wl.part.begin()->y;
+
+        wl.part.erase(wl.part.begin());
+        // for( auto& gouda: snake_1.body)
+        // fprintf(fd , "svo : x = %d, y = %d\n", gouda.coord.x, gouda.coord.y);
+        break;
+    }
 }
 
 rabbit model::new_rabbit()
@@ -291,6 +403,11 @@ void model::update()
 
     }
 
+    for( auto& wl: walls)
+    {
+        move_wall( wl);
+    }
+
 }
 
 int model::check_block_for_finish( pos block)
@@ -313,7 +430,19 @@ int model::check_block_for_finish( pos block)
                 flag = 1;
                 break;
             }
-        }    
+        }
+        
+        for( auto& wl: walls)
+        {
+            for ( auto& wl_part: wl.part )
+            {
+                if ( wl_part.x == block.x and wl_part.y == block.y)
+                {
+                    flag = 1;
+                    break;
+                }
+            }
+        }
 
         if (flag)
         {

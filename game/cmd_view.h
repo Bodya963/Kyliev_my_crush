@@ -32,6 +32,8 @@ class cmd_view: public view
 
         void draw_frame(); // рисует рамку
 
+        void draw_wall( wall& );
+
         std::list<change>::iterator check_snk_in_change( snake& );
 
         void wait_input();
