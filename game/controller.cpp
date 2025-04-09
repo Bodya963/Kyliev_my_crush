@@ -54,4 +54,7 @@ void controller::movement( model * obj_model)
     default:
         break;
     }
+
+    tcflush( STDIN_FILENO, TCIFLUSH);
+
 }

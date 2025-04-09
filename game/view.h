@@ -22,11 +22,11 @@ class view
 
         virtual void draw(view *) = 0; 
 
-        virtual void draw_snake( snake ) = 0;
+        virtual void draw_snake( snake, event) = 0;
 
         virtual void draw_rabbit( rabbit) = 0;
 
         virtual void set_fd( FILE *) = 0;
 
-    
+        virtual ~view() ;
 };

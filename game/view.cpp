@@ -20,7 +20,9 @@
         return (view *)obj;
     }
 
-   return nullptr;
+
+    printf( "only /'cmd/' or /'gui/' arg");
+    exit(1);
 }
 
 
@@ -28,3 +30,5 @@ void view::set_model( model * m)
 {
     view_model = m;
 }
+
+view::~view() {};

@@ -9,7 +9,7 @@ cmd_view::cmd_view()
     fd[0].events = POLLIN;
     fd[0].revents = POLLIN;
 
-    timeout = 200;
+    timeout = 150;
 
     //timeout.tv_sec = 1;
     //timeout.tv_usec = 0;
@@ -24,6 +24,7 @@ void cmd_view::run( view * main_view)
     clr_win();    
     draw_frame();
     
+    draw_rabbit(view_model->new_rabbit());
     draw_rabbit(view_model->new_rabbit());
     draw_rabbit(view_model->new_rabbit());
     
@@ -79,11 +80,17 @@ void cmd_view::draw( view * main_view)
 {
     for( auto& snake: view_model->snakes)
     {
-        if( check_snk_in_change( snake))
+        auto change = check_snk_in_change( snake);
+        if( change != view_model->changes.end())
         {
-            draw_snake(snake, event::eat_rabbit);
-
-            draw_rabbit( view_model->new_rabbit());
+            
+            draw_snake(snake, change->event_);
+            
+            if( change->event_ == event::eat_rabbit)
+            {
+                draw_rabbit( view_model->new_rabbit());
+            }
+            view_model->changes.erase( change);
         }
         else
         {
@@ -98,23 +105,37 @@ void cmd_view::draw( view * main_view)
 
 void cmd_view::draw_snake(snake snake_1, event event)
 {
+
+    if( event == event::kill_snake)
+    {
+        for ( auto& part : snake_1.body)
+        {
+            go_to( part.coord.x, part.coord.y);
+            printf(" ");
+        }
+
+        return;
+
+    }
+
     set_color( RED);
 
-    for(auto& part_body: snake_1.body)
-    {
-        go_to(part_body.coord.x, part_body.coord.y);
-        printf("#");
-    }
+    auto head_snake = --snake_1.body.end();
+    go_to( head_snake->coord.x, head_snake->coord.y);
+    printf("@");
+
+    head_snake--;
+    go_to( head_snake->coord.x, head_snake->coord.y);
+    printf( "#");
+    
     
     if( event == event::nothing)
     {
         go_to(view_model->last_delete_part.coord.x, view_model->last_delete_part.coord.y);
         printf(" ");
     }
-    
-    auto head_snake = --snake_1.body.end();
-    go_to( head_snake->coord.x, head_snake->coord.y);
-    printf("@");
+
+
 
     reset_color();
     
@@ -124,20 +145,19 @@ void cmd_view::draw_snake(snake snake_1, event event)
     // }
 }
 
-int cmd_view::check_snk_in_change( snake& snk)
+std::list<change>::iterator cmd_view::check_snk_in_change( snake& snk)
 {
-    for ( auto& change : view_model->changes)
+    for ( auto change = view_model->changes.begin(); change != view_model->changes.end(); change++)
     {
-        auto tail = ++(snk.body).begin() ;
-
-        if( (tail->coord.x == (++change.snake_.body.begin())->coord.x) and (tail->coord.y == (++change.snake_.body.begin())->coord.y) )
+        
+        if( change->snake_.name == snk.name)
         {
             fprintf( fd_log, "gousa\n");
-            return 1;
+            return change;
         }
     }
 
-    return 0;
+    return view_model->changes.end();
 }
 
 void cmd_view::go_to( int col, int row)

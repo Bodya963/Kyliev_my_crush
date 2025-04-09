@@ -32,7 +32,7 @@ class cmd_view: public view
 
         void draw_frame(); // рисует рамку
 
-        int check_snk_in_change( snake& );
+        std::list<change>::iterator check_snk_in_change( snake& );
 
         void wait_input();
 

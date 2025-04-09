@@ -41,6 +41,8 @@ struct part_body
 
 struct snake
 {
+    int name;
+
     std::list<part_body> body;
 
     diraction course;
@@ -53,6 +55,16 @@ struct snake
         return (tail->coord.x == body.begin()->coord.x) and (tail->coord.y == body.begin()->coord.y); 
     }
 
+};
+
+struct wall
+{
+    std::list<pos> part;
+
+    pos start_;                // крайние положение стены
+    pos end_;
+
+    diraction course;
 };
 
 struct change
@@ -85,6 +97,8 @@ class model
         std::list<rabbit> rabbits; 
         std::list<snake> snakes;
         std::list<change> changes;
+        //std::list<bot> bots;
+        std::list<wall> walls;
 
         int finish; // 0 - игра продолжается 1 - конец игры
 
@@ -96,6 +110,8 @@ class model
 
         void crawl_snake( snake&, event); // Перемещение змейки
 
+        void move_wall( wall&);
+
     public:
 
         void set_fd( FILE *);
@@ -105,7 +121,9 @@ class model
 
         model();
 
-        snake create_snake( int , diraction, pos); 
+        void create_snake( int , diraction, pos); 
+        void create_bot( int, diraction, pos, bool);
+        void create_wall( int, diraction, pos, int); 
     
         rabbit new_rabbit();
 
@@ -117,6 +135,17 @@ class model
 
         int check_block_for_finish( pos ); // Проверяет закончилась игра если змейка пойдет в следующий блок
 
-        int check_block_for_z( pos); // проверяет сьела ли змейка зайча если пойдет в следующщий блок
+        std::list<rabbit>::iterator  check_block_for_z( pos); // проверяет сьела ли змейка зайча если пойдет в следующщий блок
 
 };
+
+// class bot:
+// {
+//     public:
+//         snake& snake_;
+
+//         std::vector<diraction> choices;
+
+//         bool smart; // тупой или умный  бот
+
+// };

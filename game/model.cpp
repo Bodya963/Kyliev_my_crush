@@ -12,8 +12,7 @@ model::model()
    // win_size.ws_col--;
    // win_size.ws_row--;
     
-    diraction course = diraction::RIGHT;
-    snakes.push_back( create_snake( 5, course, center));
+    create_snake( 2, diraction::RIGHT, center);
 
     finish = 0;
 
@@ -31,12 +30,14 @@ int model::get_ws_row()
 }
 //-------------------------------------------
 
-snake model::create_snake( int size, diraction course, pos start_pos) // создает змейку размера size с напралениеи course 
+void model::create_snake( int size, diraction course, pos start_pos) // создает змейку размера size с напралениеи course 
 {                                                                      // и с начально точкой start_pos
+
     snake new_snake;
 
     new_snake.course = course;
     new_snake.score = 0;
+    new_snake.name = snakes.size() + 1;
 
     for( int i = 0; i < size; i++)
     {
@@ -47,7 +48,111 @@ snake model::create_snake( int size, diraction course, pos start_pos) // соз�
         new_snake.body.push_front( small_body);
     }
 
-    return new_snake;
+    snakes.push_back( new_snake);
+
+}
+
+// void model::create_bot( int size, diraction course, pos start_pos, bool smart)
+// {
+//     snake new_snake = 7create_snake( size, course, start_pos);
+
+//     snakes.push_back( new_snake);
+
+
+// }
+
+void model::create_wall( int size, diraction course, pos start_pos, int size_move)
+{
+    wall new_wall;
+
+    new_wall.start_.x = start_pos.x;
+    new_wall.start_.y = start_pos.y;
+
+    auto last_part = new_wall.part.begin();
+
+    switch( course)
+    {
+        case diraction::UP:
+            
+            for( int i = 0; i < size; i++)
+            {
+                pos part;
+                part.x = start_pos.x;
+                part.y = start_pos.y - i;
+
+                new_wall.part.push_back( part);
+            }
+
+            last_part = --new_wall.part.end();
+            new_wall.end_.y = last_part->y - size_move;
+            new_wall.end_.x = last_part->x;
+
+            new_wall.course = diraction::DOWN;
+
+            break;
+
+        case diraction::DOWN:
+
+            
+            for( int i = 0; i < size; i++)
+            {
+                pos part;
+                part.x = start_pos.x;
+                part.y = start_pos.y + i;
+
+                new_wall.part.push_back( part);
+            }
+
+            last_part = --new_wall.part.end();
+            new_wall.end_.y = last_part->y + size_move;
+            new_wall.end_.x = last_part->x;
+
+            break;
+
+        case diraction::LEFT:
+
+                
+            for( int i = 0; i < size; i++)
+            {
+                pos part;
+                part.x = start_pos.x - i;
+                part.y = start_pos.y;
+
+                new_wall.part.push_back( part);
+            }
+
+            last_part = --new_wall.part.end();
+            new_wall.end_.y = last_part->y;
+            new_wall.end_.x = last_part->x - size_move;
+
+            break;
+
+        case diraction::RIGHT:
+
+            
+            for( int i = 0; i < size; i++)
+            {
+                pos part;
+                part.x = start_pos.x + 1;
+                part.y = start_pos.y;
+
+                new_wall.part.push_back( part);
+            }
+
+            last_part = --new_wall.part.end();
+            new_wall.end_.y = last_part->y;
+            new_wall.end_.x = last_part->x + size_move;
+
+            break;
+    };
+
+    walls.push_back( new_wall);
+
+}
+
+void model::move_wall( wall& wl)
+{
+
 }
 
 rabbit model::new_rabbit()
@@ -91,11 +196,12 @@ void model::crawl_snake( snake& snake_1, event event)
 
         snake_1.body.push_back(body_1);
 
-        last_delete_part.coord.x = snake_1.body.begin()->coord.x;
-        last_delete_part.coord.y = snake_1.body.begin()->coord.y;
-
+        
         if( event == event::nothing)
         {
+            last_delete_part.coord.x = snake_1.body.begin()->coord.x;
+            last_delete_part.coord.y = snake_1.body.begin()->coord.y;
+
             snake_1.body.erase(snake_1.body.begin());
         }
         break;
@@ -106,11 +212,12 @@ void model::crawl_snake( snake& snake_1, event event)
 
         snake_1.body.push_back(body_1);
 
-        last_delete_part.coord.x = snake_1.body.begin()->coord.x;
-        last_delete_part.coord.y = snake_1.body.begin()->coord.y;
-
+        
         if( event == event::nothing)
         {
+            last_delete_part.coord.x = snake_1.body.begin()->coord.x;
+            last_delete_part.coord.y = snake_1.body.begin()->coord.y;
+
             snake_1.body.erase(snake_1.body.begin());
         }
         break;
@@ -121,11 +228,12 @@ void model::crawl_snake( snake& snake_1, event event)
 
         snake_1.body.push_back(body_1);
 
-        last_delete_part.coord.x = snake_1.body.begin()->coord.x;
-        last_delete_part.coord.y = snake_1.body.begin()->coord.y;
-
+        
         if( event == event::nothing)
         {
+            last_delete_part.coord.x = snake_1.body.begin()->coord.x;
+            last_delete_part.coord.y = snake_1.body.begin()->coord.y;
+
             snake_1.body.erase(snake_1.body.begin());
         }
         break;
@@ -136,11 +244,12 @@ void model::crawl_snake( snake& snake_1, event event)
 
         snake_1.body.push_back(body_1);
 
-        last_delete_part.coord.x = snake_1.body.begin()->coord.x;
-        last_delete_part.coord.y = snake_1.body.begin()->coord.y;
-
+        
         if( event == event::nothing)
         {
+            last_delete_part.coord.x = snake_1.body.begin()->coord.x;
+            last_delete_part.coord.y = snake_1.body.begin()->coord.y;
+
             snake_1.body.erase(snake_1.body.begin());
         }
         // for( auto& gouda: snake_1.body)
@@ -161,15 +270,21 @@ void model::update()
             return;
         }
 
-        if( check_block_for_z( next_block))
+        auto check_z = check_block_for_z( next_block);
+        if(  check_z != rabbits.end())
         {
             snake.score++;
+            
             change new_change;
             new_change.event_ = event::eat_rabbit;
             new_change.snake_ = snake;
 
             changes.push_back(new_change);
             crawl_snake( snake, event::eat_rabbit);
+
+            rabbits.erase( check_z);
+
+            return ;
         }
 
         crawl_snake( snake, event::nothing);
@@ -216,18 +331,13 @@ int model::check_block_for_finish( pos block)
     }
 }
 
-int model::check_block_for_z( pos block)
+std::list<rabbit>::iterator model::check_block_for_z( pos block)
 {
     rabbit if_rabbit;
     if_rabbit.coord.x = block.x;
     if_rabbit.coord.y = block.y;
-    
-    if( find( rabbits.begin(), rabbits.end(), if_rabbit) != rabbits.end())
-    {
-        return 1;
-    }
 
-    return 0;
+    return std::find( rabbits.begin(), rabbits.end(), if_rabbit);
 
 }
 
